@@ -121,16 +121,20 @@ class FoodApp(App):
 
         recipes = response.json()
 
+        total = sum(self.urgency_dict.get(i)for i in self.urgency_dict)
+
         for r in recipes:
 
             title = r.get("title","no name - ERROR") # the second input is for fallback, if the value corresponding to that key couldnt be found..
 
-            ingredient_compare = [i["name"] for i in recipe["used_ingredients"]] #searching in a dictionary within a dictionary!
+            ingredient_compare = [i["name"] for i in r["usedIngredients"]] #searching in a dictionary within a dictionary!
 
-            s = sum(self.urgency_dict.get(food_name[i],0) for food_name in ingredient_compare)
+            s = sum(self.urgency_dict.get(food_name,0) for food_name in ingredient_compare)
+
+
 
             print(f"Recipe: {title}")
-            print(f"Total 'Value' of Used Ingredients: {total_value}") #the higher the better
+            print(f"Recipe rating out of ten: {s/total*10}") #the higher the better
             print("-" * 20)
 
 
@@ -246,6 +250,8 @@ class FoodApp(App):
 
 
                 self.food_list_layout.add_widget(item_layout)
+
+                self.find_recipes()
                 
 
                     
