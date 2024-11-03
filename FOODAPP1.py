@@ -13,6 +13,7 @@ import requests
 
 
 
+
 class FoodApp(App):
 
  
@@ -24,6 +25,8 @@ class FoodApp(App):
         
         #self.checked = False
         self.urgency_dict = {}
+        
+        self.api_key = "9771b891aac744468cfd200a710fa6a3"
 
         self.food_dict= self.load_dict_file() # for any added foods - will have a key of food type etc...
         self.full_list = self.make_food_list()
@@ -95,6 +98,45 @@ class FoodApp(App):
         
         
         return main_layout
+
+
+
+    def ingred_list(self):
+
+        ingred = [i for i in self.urgency_dict]
+
+        return ingred
+    
+    def find_recipes(self):
+        ingredients = self.ingred_list()
+        ingredient_query = ','.join(ingredients)
+
+        url = 'https://api.spoonacular.com/recipes/findByIngredients' #SPOONACULAR AI
+        
+        
+
+        params = {'ingredients': ingredient_query, 'number': 5, 'ranking': 1, 'ignorePantry': True, 'apiKey': self.api_key}  #note, ranking =1 tries to find the recipe with most used...
+
+        response = requests.get(url, params=params)
+
+        recipes = response.json()
+
+        for r in recipes:
+
+            title = r.get("title","no name - ERROR") # the second input is for fallback, if the value corresponding to that key couldnt be found..
+
+            ingredient_compare = [i["name"] for i in recipe["used_ingredients"]] #searching in a dictionary within a dictionary!
+
+            s = sum(self.urgency_dict.get(food_name[i],0) for food_name in ingredient_compare)
+
+            print(f"Recipe: {title}")
+            print(f"Total 'Value' of Used Ingredients: {total_value}") #the higher the better
+            print("-" * 20)
+
+
+
+
+        
     
     def load_dict_file(self):
 
