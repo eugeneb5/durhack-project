@@ -9,6 +9,7 @@ from kivy.uix.popup import Popup
 from datetime import datetime
 from datetime import date
 import json
+import requests
 
 
 
@@ -21,7 +22,7 @@ class FoodApp(App):
 
         #self.food_list = []
         
-        self.checked = False
+        #self.checked = False
         self.urgency_dict = {}
 
         self.food_dict= self.load_dict_file() # for any added foods - will have a key of food type etc...
@@ -38,7 +39,7 @@ class FoodApp(App):
         main_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
         title_label = Label(text="Food List", font_size=32, size_hint_x = 0.4)
 
-        #main_layout.add_widget(title_label)
+        
 
         #add CHECK EXPIRY DATE button
 
@@ -166,7 +167,8 @@ class FoodApp(App):
                     expiry_label.bind(size = expiry_label.setter('text_size'))
                     item_layout.add_widget(expiry_label)
 
-                if difference.days  == 0:
+                elif difference.days  == 0:
+                    self.urgency_dict[food_name] = 15 # arbitrary estimation of weighting, usually 15 things 
                     item_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height=40)
                     food_label = Button(text=food_name,font_size=20,size_hint_y=None,height=40, background_color = [1,0,0,1],color = [1,1,1,1],background_normal = "")
                     item_layout.add_widget(food_label)
@@ -176,8 +178,8 @@ class FoodApp(App):
                     expiry_label.bind(size = expiry_label.setter('text_size'))
                     item_layout.add_widget(expiry_label)
 
-                if 0 < difference.days <= 2:
-
+                elif 0 < difference.days <= 2:
+                    self.urgency_dict[food_name] = 7 #half of expiring stuff
                     item_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height=40)
                     food_label = Button(text=food_name,font_size=20,size_hint_y=None,height=40, background_color = [1,0.5,0,0.5],color = [0,0,0,1],background_normal = "")
                     item_layout.add_widget(food_label)
@@ -187,6 +189,7 @@ class FoodApp(App):
                     item_layout.add_widget(expiry_label)
 
                 elif difference.days >= 3:
+                    self.urgency_dict[food_name] = 1 #lowest priority.
                     item_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height=40)
                     food_label = Button(text=food_name,font_size=20,size_hint_y=None,height=40, background_color = [0,1,0,0.5],color = [0,0,0,1],background_normal = "")
                     item_layout.add_widget(food_label)
